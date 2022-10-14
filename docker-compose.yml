@@ -1,0 +1,41 @@
+version: '3.3'
+
+services:
+  haproxy:
+    image: haproxy:lts-alpine3.16 
+    restart: always
+    container_name: haproxy
+    hostname: haproxy
+    networks: 
+      - dbnet
+    ports:
+      - "1936:1936"
+      - "3306:3306"
+    volumes:
+      - ./haproxy/config.d/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
+  mariadb-w1:
+    image: mariadb
+    restart: always
+    container_name: mariadb-w1
+    hostname: mariadb-w1
+    environment:
+      MARIADB_ROOT_PASSWORD: 3mEzvwkp2e
+    networks:
+      - dbnet
+  mariadb-w2:
+    image: mariadb
+    restart: always
+    container_name: mariadb-w2
+    hostname: mariadb-w2
+    environment:
+      MARIADB_ROOT_PASSWORD: 3mEzvwkp2e
+    networks:
+      - dbnet
+
+networks:
+  dbnet:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.5.0.0/16
+          gateway: 10.5.0.1
